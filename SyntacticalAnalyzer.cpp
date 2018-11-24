@@ -86,6 +86,9 @@ int SyntacticalAnalyzer::more_defines()
 	}
     }
 
+  else if (token == 35)
+    { // apply rule 1
+    }
   else
     {
       lex->ReportError ("IDENT_T or DEFINE_T expected, '" + lex->GetTokenName(token) + "' found.");
@@ -413,6 +416,8 @@ int SyntacticalAnalyzer::action()
       break;
 
     case 8:
+      // apply rule 49
+      token = lex->GetToken();
       break;
 
     default:
@@ -441,6 +446,7 @@ int SyntacticalAnalyzer::any_other_token()
     }
   else if (token >= 1 && token <= 30)
     { // apply rules 51-78, 80, 81
+      token = lex->GetToken();
     }
   else if (token == 33)
     { // apply rule 79
