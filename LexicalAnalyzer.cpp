@@ -97,7 +97,7 @@ string LexicalAnalyzer::GetTokenName (token_type t) const
 	// The GetTokenName function returns a string containing the name of the
 	// token passed to it.
 
-  if (t == IDKEY || t == -IDKEY)
+  if (t == IDENT || t == -IDENT)
     return token_names[0];
   else if (t == NUMLIT || t == -NUMLIT)
     return token_names[1];
@@ -173,7 +173,7 @@ string LexicalAnalyzer::GetTokenName (token_type t) const
 void LexicalAnalyzer::SetToken(int state)
 {
   int LexLength = lexeme.length();
-  if (state == IDKEY || state == -IDKEY || state == LISTOP)
+  if (state == IDENT || state == -IDENT || state == LISTOP)
     {
       if(lexeme[LexLength -1] == '?')
 	FindPredicates();
@@ -205,8 +205,8 @@ void LexicalAnalyzer::FindPredicates ()
 
 void LexicalAnalyzer::FindKeywords(int state)
 {
-  /* everything coming into this function has been identified as an IDKEY,
-     if, it doesn't match any of the keywords, then it remains an IDKEY */
+  /* everything coming into this function has been identified as an IDENT,
+     if, it doesn't match any of the keywords, then it remains an IDENT */
   if (state == LISTOP)
     token = LISTOP;
   else if(lexeme == "cons")
@@ -234,13 +234,13 @@ void LexicalAnalyzer::FindKeywords(int state)
   else if(lexeme == "round")
       token = ROUND;
   else 
-    token = IDKEY;
+    token = IDENT;
 }
 
 void LexicalAnalyzer::FindOtherTypes(int state)
 {
   /* everything coming into this function has been identified as something
-     OTHER than an IDKEY, and so, of the remaining token types it could be
+     OTHER than an IDENT, and so, of the remaining token types it could be
      we evaluate what it is below */
   if (state == NUMLIT || state == -NUMLIT)
     token = NUMLIT;
@@ -471,10 +471,10 @@ int states[12][22] = {
 /*      alpha     c       a       d       r       _      #   .      +       -       /       *       >       =        <       (       )       '       "       ws      ?      \0      */
 /*       0        1       2       3       4       5      6   7      8       9       10      11      12      13       14      15      16      17      18      19      20     21      */
 /*      ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-  /*0*/ {1,       2,      1,      1,      1,      ER,    5,  11,     4,      7,      DIV,    MULT,   8,      EQUALTO, 9,      LPAREN, RPAREN, SQUOTE, 10,     GD,     ER,    -IDKEY},
-  /*1*/ {1,       1,      1,      1,      1,      1,     1, -IDKEY,-IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY,  -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY,  IDKEY, -IDKEY},
-  /*2*/ {1,       1,      3,      3,      1,      1,     1, -IDKEY,-IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY,  -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY,  IDKEY, -IDKEY},
-  /*3*/ {1,       1,      1,      3,      LISTOP, 1,     1, -IDKEY,-IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY,  -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY, -IDKEY,  IDKEY, -IDKEY},
+  /*0*/ {1,       2,      1,      1,      1,      ER,    5,  11,     4,      7,      DIV,    MULT,   8,      EQUALTO, 9,      LPAREN, RPAREN, SQUOTE, 10,     GD,     ER,    -IDENT},
+  /*1*/ {1,       1,      1,      1,      1,      1,     1, -IDENT,-IDENT, -IDENT, -IDENT, -IDENT, -IDENT, -IDENT,  -IDENT, -IDENT, -IDENT, -IDENT, -IDENT, -IDENT,  IDENT, -IDENT},
+  /*2*/ {1,       1,      3,      3,      1,      1,     1, -IDENT,-IDENT, -IDENT, -IDENT, -IDENT, -IDENT, -IDENT,  -IDENT, -IDENT, -IDENT, -IDENT, -IDENT, -IDENT,  IDENT, -IDENT},
+  /*3*/ {1,       1,      1,      3,      LISTOP, 1,     1, -IDENT,-IDENT, -IDENT, -IDENT, -IDENT, -IDENT, -IDENT,  -IDENT, -IDENT, -IDENT, -IDENT, -IDENT, -IDENT,  IDENT, -IDENT},
   /*4*/ {-PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS,  5,  6,    -PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS,   -PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS,  -PLUS},
   /*5*/ {-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,5,  11,   -NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT, -NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT,-NUMLIT},
   /*6*/ {-ER,    -ER,    -ER,    -ER,    -ER,    -ER,    11, -ER,  -ER,    -ER,    -ER,    -ER,    -ER,    -ER,     -ER,    -ER,    -ER,    -ER,    -ER,    -NUMLIT,    -ER,    -ER},

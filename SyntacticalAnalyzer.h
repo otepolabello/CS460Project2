@@ -1,4 +1,4 @@
-y#ifndef SYN_H
+#ifndef SYN_H
 #define SYN_H
 
 #include <iostream>
@@ -13,7 +13,7 @@ class SyntacticalAnalyzer
 	SyntacticalAnalyzer (char * filename);
 	~SyntacticalAnalyzer ();
 	int Program();
-	int moreDefines();
+	int MoreDefines();
 	int Define();
 	int StmtList();
 	int Stmt();
@@ -25,7 +25,7 @@ class SyntacticalAnalyzer
 	int StmtPairBody();
 	int Action();
 	int AnyOtherToken();
-	int QuotedList();
+	int QuotedLit();
     private:
 	LexicalAnalyzer * lex;
 	token_type token;

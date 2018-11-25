@@ -9,7 +9,7 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
 {
   lex = new LexicalAnalyzer (filename);
   token = lex->GetToken();
-  program ();
+  Program();
 }
 
 SyntacticalAnalyzer::~SyntacticalAnalyzer ()
@@ -17,25 +17,29 @@ SyntacticalAnalyzer::~SyntacticalAnalyzer ()
   delete lex;
 }
 
-int Program(){
+int SyntacticalAnalyzer::Program(){
   int errors = 0;
   if(token == LPAREN){
-    errors += Defines();
+    cout << "Rule 1" << endl;
+    errors += Define();
   }
   else{
     errors++;
+    cout << "Rule 1" << endl;
     errors += Define();
   }
   return errors;
 }
 
-int MoreDefines(){
+int SyntacticalAnalyzer::MoreDefines(){
   int errors = 0;
   token = lex->GetToken();
   if(token == IDENT){
+    cout << "Rule 3" << endl;
     errors += StmtList();
   }
   else if(token == DEFINE){
+    cout << "Rule 2" << endl;
     errors += Define();
   }
   else{
@@ -44,7 +48,7 @@ int MoreDefines(){
   return errors;
 }
 
-int Define(){
+int SyntacticalAnalyzer::Define(){
   int errors = 0;
   token = lex->GetToken();
   if(token == LPAREN){
@@ -54,20 +58,15 @@ int Define(){
     errors++;
   }
   if(token == IDENT){
+    cout << "Rule 4" << endl;
     errors += ParamList();
-  }
-  else{
-    errors++;
-  }
-  token = lex->GetToken();
-  if(token == RPAREN){
-    errors += Stmt();
-    errors += StmtList();
-  }
-  else{
-    errors++;
-  }
-  if(token == RPAREN){
+    token = lex->GetToken();
+    if(token == RPAREN){
+      errors += Stmt();
+      errors += StmtList();
+    }
+    if(token == RPAREN){
+    }
   }
   else{
     errors++;
@@ -75,7 +74,7 @@ int Define(){
   return errors;
 }
 
-int StmtList(){
+int SyntacticalAnalyzer::StmtList(){
   int errors = 0;
   token = lex->GetToken();
   if(token == RPAREN){
@@ -89,7 +88,7 @@ int StmtList(){
   return errors;
 }
 
-int Stmt(){
+int SyntacticalAnalyzer::Stmt(){
   int errors = 0;
   if(token == IDENT){
     token = lex->GetToken();
@@ -107,7 +106,7 @@ int Stmt(){
   return errors;
 }
 
-int Literal(){
+int SyntacticalAnalyzer::Literal(){
   int errors = 0;
   if(token == STRLIT || token == NUMLIT){
     token = lex->GetToken();
@@ -122,7 +121,7 @@ int Literal(){
   return errors;
 }
 
-int MoreTokens(){
+int SyntacticalAnalyzer::MoreTokens(){
   int errors = 0;
   if(token == RPAREN || token == IDENT || token == NUMLIT || token == STRLIT ||
      token == CONS || token == IF || token == DISPLAY || token == NEWLINE ||
@@ -132,7 +131,7 @@ int MoreTokens(){
      token == MULT || token == MODULO || token == ROUND || token == EQUALTO ||
      token == GT || token == LT || token == GTE || token == LTE || token == SQUOTE ||
      token == COND || token == ELSE){
-    errors += AnyOtherTokens();
+    errors += AnyOtherToken();
   }
   else if(token == RPAREN){
     token = lex->GetToken();
@@ -144,7 +143,7 @@ int MoreTokens(){
   return errors;
 }
 
-int ParamList(){
+int SyntacticalAnalyzer::ParamList(){
   int errors = 0;
   token = lex->GetToken();
   if(token == IDENT){
@@ -160,7 +159,7 @@ int ParamList(){
   return errors;
 }
 
-int ElsePart(){
+int SyntacticalAnalyzer::ElsePart(){
   int errors = 0;
   if(token == IDENT){
     token = lex->GetToken();
@@ -178,7 +177,7 @@ int ElsePart(){
   return errors;
 }
 
-int StmtPair(){
+int SyntacticalAnalyzer::StmtPair(){
   int errors = 0;
   if(token == LPAREN){
     errors += StmtPairBody();
@@ -195,7 +194,7 @@ int StmtPair(){
   return errors;
 }
 
-int StmtPairBody(){
+int SyntacticalAnalyzer::StmtPairBody(){
   int errors = 0;
   if(token = ELSE){
     errors += Stmt();
@@ -212,7 +211,7 @@ int StmtPairBody(){
   return errors;
 }
 
-int Action(){
+int SyntacticalAnalyzer::Action(){
   int errors = 0;
   if(token == IF){
     errors += Stmt();
@@ -231,10 +230,10 @@ int Action(){
   return errors;
 }
 
-int AnyOtherToken(){
+int SyntacticalAnalyzer::AnyOtherToken(){
   return 0;
 }
 
-int QuotedList(){
+int SyntacticalAnalyzer::QuotedLit(){
   return 0;
 }
