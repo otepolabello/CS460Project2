@@ -1,7 +1,0 @@
-Input file: X4P2.ss
-   1: (define (main)
-   2:   (display (car '(1 2 3)))
-   3:   (newline)
-Error at 3,10: IDENT_T or DEFINE_T expected, 'NEWLINE_T' found.
-Error at 3,10: EOF token expected, 'NEWLINE_T' found.
-2 errors found in input file
