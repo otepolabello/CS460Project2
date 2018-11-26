@@ -154,6 +154,7 @@ int SyntacticalAnalyzer::stmt_list()
   int errors = 0;
   if (token == 2 || token == 3 || token == 33 || token == 1 || token == 31)
     { // apply rule 5
+      token = lex->GetToken();
       errors += stmt();
       errors += stmt_list();
     }
