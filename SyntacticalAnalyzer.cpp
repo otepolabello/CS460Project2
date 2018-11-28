@@ -14,7 +14,6 @@ SyntacticalAnalyzer::SyntacticalAnalyzer (char * filename)
   p2file.open(p2name);
   token_type t;
   int errors = program();
-  p2file << "This file has " << errors << " errors.\n";
 }
 
 SyntacticalAnalyzer::~SyntacticalAnalyzer ()
@@ -27,14 +26,14 @@ int SyntacticalAnalyzer::program()
   int errors = 0;
   token = lex->GetToken();
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Program Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Program function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   // apply rule 1
-  if (token == 31)
+  if (token == LPAREN_T)
     {
       p2file << "Using Rule 1\n";
       token = lex->GetToken();
       errors += define();
-      if (token == 31)
+      if (token == LPAREN_T)
 	{
 	  token = lex->GetToken();
 	  errors += more_defines();
@@ -44,7 +43,7 @@ int SyntacticalAnalyzer::program()
 	  lex->ReportError ("left parenthesis expected, '" + lex->GetTokenName(token) + "' found.");
 	  errors++;
 	}
-      if (token == 35)
+      if (token == EOF_T)
 	{
 	  // do nothing 
 	}
@@ -60,20 +59,20 @@ int SyntacticalAnalyzer::program()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Program Function; current token is: " << tok << endl;
+  p2file << "Exiting Program function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::more_defines()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering More_Defines Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering More_Defines function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 13)
+  if (token == DEFINE_T)
     { // apply rule 2
       p2file << "Using Rule 2\n";
       errors += define();
-      if (token == 31)
+      if (token == LPAREN_T)
 	{
 	  token = lex->GetToken();
 	  errors += more_defines();
@@ -85,12 +84,12 @@ int SyntacticalAnalyzer::more_defines()
 	}
     }
  
-  else if (token == 1)
+  else if (token == IDENT_T)
     { // apply rule 3
       p2file << "Using Rule 3\n";
       token = lex->GetToken();
       errors += stmt_list();
-      if (token == 32)
+      if (token == RPAREN_T)
 	token = lex->GetToken();
       else
 	{
@@ -99,7 +98,7 @@ int SyntacticalAnalyzer::more_defines()
 	}
     }
 
-  if (token == 35)
+  if (token == EOF_T)
     { // apply rule 1
     }
   else
@@ -108,32 +107,32 @@ int SyntacticalAnalyzer::more_defines()
       errors++;
       }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting More_Defines Funtion; current token is: " << tok << endl;
+  p2file << "Exiting More_Defines function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::define()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Define Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Define function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 13)
+  if (token == DEFINE_T)
     { // apply rule 4
       p2file << "Using Rule 4\n";
       token = lex->GetToken();
-      if (token == 31)
+      if (token == LPAREN_T)
 	{
 	  token = lex->GetToken();
-	  if (token == 1)
+	  if (token == IDENT_T)
 	    {
 	      token = lex->GetToken();
 	      errors += param_list();
-	      if (token == 32)
+	      if (token == RPAREN_T)
 		{
 		  token = lex->GetToken();
 		  errors += stmt();
 		  errors += stmt_list();
-		  if (token == 32)
+		  if (token == RPAREN_T)
 		    token = lex->GetToken();
 		  else
 		    {
@@ -165,22 +164,23 @@ int SyntacticalAnalyzer::define()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Define Function; current token is: " << tok << endl;
+  p2file << "Exiting Define function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::stmt_list()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Stmt_List Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Stmt_List function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 2 || token == 3 || token == 33 || token == 1 || token == 31)
+  if (token == NUMLIT_T || token == STRLIT_T || token == SQUOTE_T
+      || token == IDENT_T || token == LPAREN_T)
     { // apply rule 5
       p2file << "Using Rule 5\n";
       errors += stmt();
       errors += stmt_list();
     }
-  else if (token == 32)
+  else if (token == RPAREN_T)
     { // apply rule 6
       p2file << "Using Rule 6\n";
     }
@@ -190,31 +190,31 @@ int SyntacticalAnalyzer::stmt_list()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Stmt_List Function; current token is: " << tok << endl;
+  p2file << "Exiting Stmt_List function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::stmt()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Stmt Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Stmt function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 2 || token == 3 || token == 33)
+  if (token == NUMLIT_T || token == STRLIT_T || token == SQUOTE_T)
     { // apply rule 7
       p2file << "Using Rule 7\n";
       errors += literal();
     }
-  else if (token == 1)
+  else if (token == IDENT_T)
     { // apply rule 8
       p2file << "Using Rule 8\n";
       token = lex->GetToken();
     }
-  else if (token == 31)
+  else if (token == LPAREN_T)
     { // apply rule 9
       p2file << "Using Rule 9\n";
       token = lex->GetToken();
       errors += action();
-      if (token == 32)
+      if (token == RPAREN_T)
 	token = lex->GetToken();
       else
 	{
@@ -228,26 +228,26 @@ int SyntacticalAnalyzer::stmt()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Stmt Function; current token is: " << tok << endl;
+  p2file << "Exiting Stmt function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::literal()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Literal Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Literal function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 2)
+  if (token == NUMLIT_T)
     { // apply rule 10
       p2file << "Using Rule 10\n";
       token = lex->GetToken();
     }
-  else if (token == 3)
+  else if (token == STRLIT_T)
     { // apply rule 11
       p2file << "Using Rule 11\n";
       token = lex->GetToken();
     }
-  else if (token == 33)
+  else if (token == SQUOTE_T)
     { // apply rule 12
       p2file << "Using Rule 12\n";
       token = lex ->GetToken();
@@ -259,16 +259,16 @@ int SyntacticalAnalyzer::literal()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Literal Function; current token is: " << tok << endl;
+  p2file << "Exiting Literal function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::quoted_lit()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Quoted_Lit Function; current token is: " << tok << ", literal: " << lexeme << endl;
+  p2file << "Entering Quoted_Lit function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token >= 1 && token <= 31 || token == 33)
+  if (token >= IDENT_T && token <= LPAREN_T || token == SQUOTE_T)
     { // apply rule 13
       p2file << "Using Rule 13\n";
       errors += any_other_token();
@@ -279,22 +279,22 @@ int SyntacticalAnalyzer::quoted_lit()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Quoted_Lit Function; current token is: " << tok << endl;
+  p2file << "Exiting Quoted_Lit function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::more_tokens()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering More_Tokens Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering More_Tokens function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token >= 1 && token <= 31 || token == 33)
+  if (token >= IDENT_T && token <= LPAREN_T || token == SQUOTE_T)
     { // apply rule 14
       p2file << "Using Rule 14\n";
       errors += any_other_token();
       errors += more_tokens();
     }
-  else if (token == 32)
+  else if (token == RPAREN_T)
     { // apply rule 15
       p2file << "Using Rule 15\n";
     }
@@ -304,22 +304,22 @@ int SyntacticalAnalyzer::more_tokens()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting More_Tokens Function; current token is: " << tok << endl;
+  p2file << "Exiting More_Tokens function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::param_list()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Param_List Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Param_List function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 1)
+  if (token == IDENT_T)
     { // apply rule 16
       p2file << "Using Rule 16\n";
       token = lex->GetToken();
       errors += param_list();
     }
-  else if (token == 32)
+  else if (token == RPAREN_T)
     { // apply rule 17
       p2file << "Using Rule 17\n";
     }
@@ -329,21 +329,22 @@ int SyntacticalAnalyzer::param_list()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Param_List Function; current token is: " << tok << endl;
+  p2file << "Exiting Param_List function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::else_part()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Else_Part Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Else_Part function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 2 || token == 3 || token == 33 || token == 1 || token == 31)
+  if (token == NUMLIT_T || token == STRLIT_T || token == SQUOTE_T
+      || token == IDENT_T || token == LPAREN_T)
     { // apply rule 18
       p2file << "Using Rule 18\n";
       errors += stmt();
     }
-  else if (token == 32)
+  else if (token == RPAREN_T)
     { // apply rule 19
       p2file << "Using Rule 19\n";
     }
@@ -353,22 +354,22 @@ int SyntacticalAnalyzer::else_part()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Else_Part Function; current token is: " << tok << endl;
+  p2file << "Exiting Else_Part function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::stmt_pair()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Stmt_Pair Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Stmt_Pair function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 31)
+  if (token == LPAREN_T)
     { // apply rule 20
       p2file<< "Using Rule 20\n";
       token = lex->GetToken();
       errors += stmt_pair_body();
     }
-  else if (token == 32)
+  else if (token == RPAREN_T)
     { // apply rule 21
       p2file << "Using Rule 21\n";
     }
@@ -378,22 +379,33 @@ int SyntacticalAnalyzer::stmt_pair()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Stmt_Pair Function; current token is: " << tok << endl;
+  p2file << "Exiting Stmt_Pair function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::stmt_pair_body()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Stmt_Pair_Body Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Stmt_Pair_Body function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 2 || token == 3 || token == 33 || token == 1 || token == 31)
+  if (token == NUMLIT_T || token == STRLIT_T || token == SQUOTE_T
+      || token == IDENT_T || token == LPAREN_T)
     { // apply rule 22
       p2file << "Using Rule 22\n";
       errors += stmt();
-      if (token == 2 || token == 3 || token == 33 || token == 1 || token == 31)
+      if (token == NUMLIT_T || token == STRLIT_T || token == SQUOTE_T
+	  || token == IDENT_T || token == LPAREN_T)
 	{
 	  errors += stmt();
+	  if (token == RPAREN_T)
+	    {
+	      token = lex->GetToken();
+	      errors += stmt_pair();
+	    }
+	  else
+	    {
+	      lex->ReportError ("right parenthesis expected, '" + lex->GetTokenName(token) + "' found.");
+	    }
 	}
       else
 	{
@@ -401,12 +413,12 @@ int SyntacticalAnalyzer::stmt_pair_body()
 	  errors++;
 	}
     }
-  else if (token == 21)
+  else if (token == ELSE_T)
     { // apply rule 23
       p2file << "Using Rule 23\n";
-      token == lex->GetToken();
+      token = lex->GetToken();
       errors += stmt();
-      if (token == 32)
+      if (token == RPAREN_T)
 	{
 	  token = lex->GetToken();
 	}
@@ -417,19 +429,19 @@ int SyntacticalAnalyzer::stmt_pair_body()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Stmt_Pair_Body Function; current token is: " << tok << endl;
+  p2file << "Exiting Stmt_Pair_Body function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::action()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Action Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Action function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
   switch(token)
     {
 
-    case 5:
+    case IF_T:
       // apply rule 24
       p2file << "Using Rule 24\n";
       token = lex->GetToken();
@@ -438,11 +450,11 @@ int SyntacticalAnalyzer::action()
       errors += else_part();
       break;
 
-    case 6:
+    case COND_T:
       // apply rule 25
       p2file << "Using Rule 25\n";
       token = lex->GetToken();
-      if (token == 31)
+      if (token == LPAREN_T)
 	{
 	  token = lex->GetToken();
 	  errors += stmt_pair_body();
@@ -455,60 +467,60 @@ int SyntacticalAnalyzer::action()
       break;
 
     // apply rules 26, 30-35, 41, 48
-    case 9:
+    case LISTOP_T:
       p2file << "Using Rule 26\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 12:
+    case NOT_T:
       p2file << "Using Rule 30\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 14:
+    case NUMBERP_T:
       p2file << "Using Rule 31\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 15:
+    case LISTP_T:
       p2file << "Using Rule 32\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 16:
+    case ZEROP_T:
       p2file << "Using Rule 33\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 17:
+    case NULLP_T:
       p2file << "Using Rule 34\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 18:
+    case STRINGP_T:
       p2file << "Using Rule 35\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 20:
+    case ROUND_T:
       p2file << "Using Rule 41\n";
       token = lex->GetToken();
       errors += stmt();
       break;
-    case 7:
+    case DISPLAY_T:
       p2file << "Using Rule 48\n";
       token = lex->GetToken();
       errors += stmt();
       break;
 
     // apply rules 27, 40
-    case 4:
+    case CONS_T:
       p2file << "Using Rule 27\n";
       token = lex->GetToken();
       errors += stmt();
       errors += stmt();
       break;
-    case 19:
+    case MODULO_T:
       p2file << "Using Rule 40\n";
       token = lex->GetToken();
       errors += stmt();
@@ -516,97 +528,101 @@ int SyntacticalAnalyzer::action()
       break;
 
     // apply rules 28, 29, 36, 39, 42-47
-    case 10:
+    case AND_T:
       p2file << "Using Rule 28\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 11:
+    case OR_T:
       p2file << "Using Rule 29\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 22:
+    case PLUS_T:
       p2file << "Using Rule 36\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 25:
+    case MULT_T:
       p2file << "Using Rule 39\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 26:
+    case EQUALTO_T:
       p2file << "Using Rule 42\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 27:
+    case GT_T:
       p2file << "Using Rule 43\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 28:
+    case LT_T:
       p2file << "Using Rule 44\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 29:
+    case GTE_T:
       p2file << "Using Rule 45\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 30:
+    case LTE_T:
       p2file << "Using Rule 46\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
-    case 1:
+    case IDENT_T:
       p2file << "Using Rule 47\n";
       token = lex->GetToken();
       errors += stmt_list();
       break;
 
     // apply rules 37, 38
-    case 23:
+    case MINUS_T:
       p2file << "Using Rule 37\n";
       token = lex->GetToken();
       errors += stmt();
       errors += stmt_list();
       break;
-    case 24:
+    case DIV_T:
       p2file << "Using Rule 38\n";
       token = lex->GetToken();
       errors += stmt();
       errors += stmt_list();
       break;
 
-    case 8:
+    case NEWLINE_T:
       // apply rule 49
       p2file << "Using Rule 49\n";
       token = lex->GetToken();
       break;
 
+    case RPAREN_T:
+      // do nothing
+      break;
+      
     default:
       lex->ReportError ("action token expected, '" + lex->GetTokenName(token) + "' found.");
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Action Function; current token is: " << tok << endl;
+  p2file << "Exiting Action function; current token is: " << tok << endl;
   return errors;
 }
 
 int SyntacticalAnalyzer::any_other_token()
 {
   string tok = lex->GetTokenName(token), lexeme = lex->GetLexeme();
-  p2file << "Entering Any_Other_Token Function; current token is: " << tok << ", lexeme: " << lexeme << endl;
+  p2file << "Entering Any_Other_Token function; current token is: " << tok << ", lexeme: " << lexeme << endl;
   int errors = 0;
-  if (token == 31)
+  if (token == LPAREN_T)
     { // apply rule 50
       p2file << "Using Rule 50\n";
       token = lex->GetToken();
       errors += more_tokens();
-      if (token == 32)
+      if (token == RPAREN_T)
 	{
 	  token = lex->GetToken();
 	}
@@ -616,25 +632,25 @@ int SyntacticalAnalyzer::any_other_token()
 	  errors++;
 	}
     }
-  else if (token >= 1 && token <= 30)
+  else if (token >= IDENT_T && token <= LTE_T)
     { // apply rules 51-78, 80, 81
-      if(token >= 1 && token <= 5)
+      if(token >= IDENT_T && token <= IF_T)
 	p2file << "Using Rule " << token + 50 << endl;
-      else if(token == 6)
+      else if(token == COND_T)
 	p2file << "Using Rule 80\n";
-      else if(token >= 7 && token <= 18)
+      else if(token >= DISPLAY_T && token <= STRINGP_T)
 	p2file << "Using Rule " << token + 49 << endl;
-      else if(token == 19 || token == 20)
+      else if(token == MODULO_T || token == ROUND_T)
 	p2file << "Using Rule " << token + 53 << endl;
-      else if(token == 21)
+      else if(token == ELSE_T)
 	p2file << "Using Rule 81\n";
-      else if(token >= 22 && token <= 25)
+      else if(token >= PLUS_T && token <= MULT_T)
 	p2file << "Using Rule " << token + 46 << endl;
-      else if(token >= 26 && token <= 30)
+      else if(token >= EQUALTO_T && token <= LTE_T)
 	p2file << "Using Rule " << token + 48 << endl;
       token = lex->GetToken();
     }
-  else if (token == 33)
+  else if (token == SQUOTE_T)
     { // apply rule 79
       p2file << "Using Rule 79\n";
       token = lex->GetToken();
@@ -646,6 +662,6 @@ int SyntacticalAnalyzer::any_other_token()
       errors++;
     }
   tok = lex->GetTokenName(token);
-  p2file << "Exiting Any_Other_Token Function; current token is: " << tok << endl;
+  p2file << "Exiting Any_Other_Token function; current token is: " << tok << endl;
   return errors;
 }

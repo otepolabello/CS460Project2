@@ -17,14 +17,14 @@ clean :
 	rm -f *.o P2.out *.gch *.lst *.dbg *.p* *~
 
 submit : Project2.cpp LexicalAnalyzer.h LexicalAnalyzer.cpp SyntacticalAnalyzer.h SyntacticalAnalyzer.cpp makefile README.txt
-	rm -rf TeamLetterP2
-	mkdir TeamLetterP2
-	cp Project2.cpp TeamLetterP2
-	cp LexicalAnalyzer.h TeamLetterP2
-	cp LexicalAnalyzer.cpp TeamLetterP2
-	cp SyntacticalAnalyzer.h TeamLetterP2
-	cp SyntacticalAnalyzer.cpp TeamLetterP2
-	cp makefile TeamLetterP2
-	cp README.txt TeamLetterP2
-	tar cfvz TeamLetterP2.tgz TeamLetterP2
-	cp TeamLetterP2.tgz ~tiawatts/cs460drop
+	rm -rf TeamXP2
+	mkdir TeamXP2
+	cp Project2.cpp TeamXP2
+	cp LexicalAnalyzer.h TeamXP2
+	cp LexicalAnalyzer.cpp TeamXP2
+	cp SyntacticalAnalyzer.h TeamXP2
+	cp SyntacticalAnalyzer.cpp TeamXP2
+	cp makefile TeamXP2
+	cp README.txt TeamXP2
+	tar cfvz TeamXP2.tgz TeamXP2
+	cp TeamXP2.tgz ~tiawatts/cs460drop
